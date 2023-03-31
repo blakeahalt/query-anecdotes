@@ -1,18 +1,27 @@
-const Notification = () => {
+import React, { useEffect } from 'react';
+
+const Notification = (props) => {
   const style = {
-    border: 'solid',
     padding: 10,
-    borderWidth: 1,
-    marginBottom: 5
-  }
-  
-  if (true) return null
+    marginTop: '15px',
+    marginBottom: '15px',
+  };
 
-  return (
-    <div style={style}>
-      
-    </div>
-  )
-}
+  useEffect(() => {
+    if (props.message !== '') {
+      const timer = setTimeout(() => {
+        props.setMessage('');
+      }, 3000);
 
-export default Notification
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [props.message]);
+
+  return props.message ? (
+    <div style={style}>{props.message}</div>
+  ) : null;
+};
+
+export default Notification;
