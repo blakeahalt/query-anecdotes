@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { createAnecdote, updateAnecdote, getAnecdotes } from '../requests'
-import { useQuery, useMutation, useQueryClient} from 'react-query'
+import React from 'react';
+import { useMutation, useQueryClient} from 'react-query'
+import { createAnecdote } from '../requests'
+import { useNotificationDispatch } from '../NotificationContext';
 
-
-const AnecdoteForm = (addAnecdote) => {
+const AnecdoteForm = () => {
   const queryClient = useQueryClient()
-  const [notificationMessage, setNotificationMessage] = useState('');
+  const notificationDispatch = useNotificationDispatch();
 
   const newAnecdoteMutation = useMutation(createAnecdote, {
     onSuccess: (addAnecdote) => {
@@ -13,10 +13,19 @@ const AnecdoteForm = (addAnecdote) => {
       if (anecdotes) {
         queryClient.setQueryData('anecdotes', anecdotes.concat(addAnecdote))
       }
-      setNotificationMessage(`New anecdote "${addAnecdote.content}" has been created.`)
+      notificationDispatch({ type: 'SET', payload: `Anecdote: "${addAnecdote.content}" created` });
       setTimeout(() => {
-        setNotificationMessage('')
+        notificationDispatch({ type: 'RESET' });
       }, 3000) 
+    },
+    onError: (err) => {
+      const errorMessage = err?.response?.data?.error;
+      if (errorMessage) {
+        notificationDispatch({ type: 'SET', payload: errorMessage });
+        setTimeout(() => {
+          notificationDispatch({ type: 'RESET' });
+        }, 3000) 
+      }
     },
   })
   
@@ -27,17 +36,9 @@ const AnecdoteForm = (addAnecdote) => {
     newAnecdoteMutation.mutate({ content, votes: 0 })
     console.log('new anecdote')
 }
-
-  const updateAnecdoteMutation = useMutation(updateAnecdote, {
-    onSuccess: () => {
-      queryClient.invalidateQueries('anecdotes')
-    },
-  })
-
   return (
     <div >
       <h3>create new</h3>
-      {notificationMessage && <div>{notificationMessage}</div>}
       <form style={{margin: '2vh'}} onSubmit={onCreate}>
         <input name='anecdote' />
         <button type="submit">create</button>

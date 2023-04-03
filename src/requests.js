@@ -13,16 +13,6 @@ export const createAnecdote = async (newAnecdote) => {
 export const updateAnecdote = updatedAnecdote =>
   axios.put(`${baseUrl}/${updatedAnecdote.id}`, updatedAnecdote).then(res => res.data)
 
-// export const deleteAnecdote = anecdote => {
-//   axios.delete(`${baseUrl}/${anecdote.id}`).then(res => res.data)
-//   }
-// export const deleteAnecdote = anecdote => {
-//   return axios.delete(`${baseUrl}/${anecdote.id}`).then(res => res.data)
-// }
-// export const deleteAnecdote = async (anecdote) => {
-//   const response = await axios.delete(`${baseUrl}/${anecdote.id}`);
-//   return response.data;
-// };
 export const deleteAnecdote = async (anecdote) => {
   const res = await axios.delete(`${baseUrl}/${anecdote.id}`)
   return anecdote
